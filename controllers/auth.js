@@ -57,13 +57,41 @@ exports.login = async function(req,res){
     let user = await User.findOne({email})
    if(user && await bcrypt.compare(password, user.password)){
     
-    const payload = {
-        id: user.id
-    };
+        const payload = {
+            id: user.id
+        };
 
-    await jwt.sign(payload, process.env.TOKEN_KEY, { expiresIn: 3600000 }, (err, token) => {
-        if (err) throw err;
-        res.json({ token });
-    });
+        await jwt.sign(payload, process.env.TOKEN_KEY, { expiresIn: 3600000 }, (err, token) => {
+            if (err) throw err;
+            res.json({ token });
+        });
+    }
 }
+
+
+exports.verifyAccount = async function(req,res){
+    const errors = validationResult(req);
+
+    if(!errors.isEmpty()){
+        return res.status(401).json({errors: errors.array()});
+
+    }
+
+    const{email, otp} = req.body;
+
+    let user
+    try{
+        user = await User.findOne({email});
+    }catch(err){
+        return res.status(500).json({errors: [{msg: `${err}`}]})
+    }
+    if(otp !== user.otp){
+        return res.status(422).json({errors: [{msg: 'OTP is incorrect'}]})
+    }
+
+    user.isActive = true;
+    user.otp = null;
+    await user.save();
+    res.status(200).json({ msg: 'User verified' });
+
 }

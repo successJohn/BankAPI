@@ -1,7 +1,8 @@
 const nodemailer = require('nodemailer');
 require("dotenv").config();
 const AccountNumbers = require("../models/accountNumber");
-const {USERNAME, PASSWORD} = process.env;
+const USERNAME = process.env.USERNAME;
+const PASSWORD = process.env.PASSWORD;
 
 exports.sendMail = async function (recipients, subject, text){
     let transporter = nodemailer.createTransport({
@@ -47,3 +48,6 @@ exports.generateAccountNumber = async function () {
     await newAccountNumber.save();
     return Number(accountNumber);
 };
+
+
+

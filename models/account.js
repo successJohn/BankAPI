@@ -35,7 +35,7 @@ const AccountSchema = new Schema ({
     accountType: {
         type: String,
         enum: [AccountType.SAVINGS, AccountType.CURRENT],
-        default: Type.SAVINGS
+        default: AccountType.SAVINGS
     }
 });
 

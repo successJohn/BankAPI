@@ -1,10 +1,13 @@
-const { config } = require("dotenv");
+//const { config } = require("dotenv");
 const jwt = require("jsonwebtoken");
 
-require ("dotenv").config();
+//require ("dotenv").config();
+const config = process.env;
 
-exports.tokenVerification = (req, res, next) =>{
-    const token = req.headers["Authorization"];
+exports.authentication = (req, res, next) =>{
+    //const token = req.headers["Authorization"];
+    const token =
+    req.body.token || req.query.token || req.headers["Authorization"];
 
     if(!token){
         return res.status(403).json({msg: "A token is required for authorization"})
@@ -17,5 +20,3 @@ exports.tokenVerification = (req, res, next) =>{
     }
     return next();
 }
-
-module.exports = tokenVerification;

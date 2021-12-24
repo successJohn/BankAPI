@@ -10,7 +10,7 @@ app.use(express.json());
 
 // routes
 app.use('/api/auth', require('./routes/auth'));
-
+app.use("/api/account", require("./routes/account"));
 //app.use('/api/accounts', require('./routes/accounts'));
 
 app.listen(PORT, () => {
