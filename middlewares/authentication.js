@@ -7,7 +7,7 @@ const config = process.env;
 exports.authentication = (req, res, next) =>{
     //const token = req.headers["Authorization"];
     const token =
-    req.body.token || req.query.token || req.headers["Authorization"];
+    req.body.token || req.query.token || req.headers["x-access-token"];
 
     if(!token){
         return res.status(403).json({msg: "A token is required for authorization"})

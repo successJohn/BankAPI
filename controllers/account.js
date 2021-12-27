@@ -65,6 +65,7 @@ exports.deposit = async function (req, res){
     }
 
     const {id} = req.user;
+    console.log(id);
     const{accountId} = req.params;
     const{amount, description} = req.body;
 
@@ -83,15 +84,81 @@ exports.deposit = async function (req, res){
         return res.status(400).json({msg: "Bank Account not found"});
     }
 
-    if(account.owner.toString() !== id){
-        return res.status(401).json({msg: "Unauthorized"});
+        if(account.owner.toString() !== id){
+            return res.status(401).json({msg: "Unauthorized"});
+        }
+
+        // create transaction history
+
+        const transaction = new TransactionHistory ({
+            title: "DEPOSIT",
+            type: "CREDIT",
+            amount, 
+            description,
+            account: accountId
+        });
+
+        try{
+            await transaction.save();
+        }catch(err){
+            console.log(err.message);
+            return res.status(500).json({msg: 'Server error'})
+        }
+
+
+        account.balance +=amount;
+        account.transactions.push(transaction._id);
+        await account.save();
+        res.status(200).json({account});
+}
+
+
+exports.withdrawal = async function(req,res){
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+        return res.status(422).json({errors: errors.array()});
     }
 
+    const {id} = req.user;
+    console.log(id);
+    const {accountId} = req.params;
+  
+    const {amount, description, pin} = req.body;
+
+    let account;
+    
+    try{
+        account = await Account.findById(accountId);
+        console.log(account.owner)
+    }catch(err){
+        if(err.message.includes('Cast to ObjectId failed for value')){
+            return res.status(400).json({msg: "Invalid Account Id"})
+        }
+        return res.status(500).json({msg: "Server error"})
+    }
+
+    if(!account){
+        return res.status(400).json({msg: "Bank Account not found"});
+    }
+
+        if(account.owner.toString() !== id){
+            return res.status(401).json({msg: "Unauthorized"});
+        }
+
+    if(account.balance < amount){
+        return res.status(400).json({msg: "Insufficient Funds"})
+    }
+
+    if(account.pin !== pin){
+        return res.status(400).json({msg: "Invalid Pin"})
+    }
+
+    account.balance -=amount;
     // create transaction history
 
     const transaction = new TransactionHistory ({
-        title: "DEPOSIT",
-        type: "CREDIT",
+        title: "WITHDRAWAL",
+        type: "DEBIT",
         amount, 
         description,
         account: accountId
@@ -99,6 +166,9 @@ exports.deposit = async function (req, res){
 
     try{
         await transaction.save();
+        account.transactions.push(transaction._id);
+        await account.save();
+        res.status(200).json({msg: "Withdrawal Successful"})
     }catch(err){
         console.log(err.message);
         return res.status(500).json({msg: 'Server error'})
@@ -108,5 +178,91 @@ exports.deposit = async function (req, res){
     account.balance +=amount;
     account.transactions.push(transaction._id);
     await account.save();
-    res.status(200).json({account});
+   // res.status(200).json({account});
 }
+
+
+exports.transfer = async function(req, res){
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+        return res.status(422).json({errors: errors.array()});
+    }
+
+    const {id} = req.user;
+    console.log(id);
+    const {accountId} = req.params;
+  
+    const {amount, description,recipientAccountNumber, pin} = req.body;
+
+    let account;
+
+    try{
+        account = Account.findById(accountId)
+    }catch(err){
+        if(err.message.includes('Cast to ObjectId failed for value')){
+            return res.status(400).json({msg: "Invalid Account Id"})
+        }
+        return res.status(500).json({msg: "Server error"})
+    }
+
+    if(!account){
+        return res.status(400).json({msg:"Account not found"})
+    }
+    
+    if(account.owner.toString() !== id){
+        return res.status(401).json({msg: "Unauthorized"});
+    }
+
+    
+
+    let recipientAccount ;
+    try{
+        recipientAccount = await Account.findOne({number: recipientAccountNumber})
+    }catch(err){
+        return res.status(500).json({msg: "Server error"})
+    }
+
+    if(!recipientAccount){
+        return res.status(400).json({msg: "Account Number does not exist"})
+    }
+
+    account.balance -=amount;
+    recipientAccount.balance +=amount;
+    // create transaction history
+
+    const senderTransaction = new TransactionHistory ({
+        title: "TRANSFER",
+        type: "DEBIT",
+        amount, 
+        description,
+        account: accountId
+    });
+
+    const recipientTransaction = new TransactionHistory ({
+        title: "TRANSFER",
+        type: "CREDIT",
+        amount, 
+        description,
+        account: recipientAccount._id
+    });
+
+    try{
+
+        account.transactions.push(transaction._id);
+        recipientAccount.transactions.push(recipientTransaction._id);
+        
+        await senderTransaction.save();  
+        await recipientTransaction.save();      
+    
+        
+        await account.save();
+        await recipientAccount.save();
+        res.status(200).json({msg: "Transfer Successful"})
+    }catch(err){
+        console.log(err.message);
+        return res.status(500).json({msg: 'Server error'})
+    }
+
+
+}
+

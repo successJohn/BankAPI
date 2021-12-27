@@ -13,3 +13,9 @@ exports.depositValidation =  [
     check("amount", "Amount is required").not().isEmpty() 
 ]
 
+exports.withdrawalValidation =  [
+    check("amount", "Amount is required").not().isEmpty(),
+    check("pin", "Please enter your pin").not().isEmpty().isLength({min:4, max:4}),
+    
+]
+
