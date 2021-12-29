@@ -11,5 +11,7 @@ const {
 route.post("/register", registerValidation,register);
 route.post("/verify-account", verifyAccount);
 route.post("/login", loginValidation, login);
+router.post('/forgot-password', validateEmail, forgotPassword);
+router.post('/reset-password', resetPassword);
 
 module.exports = route;
