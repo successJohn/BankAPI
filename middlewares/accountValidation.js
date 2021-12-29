@@ -19,3 +19,9 @@ exports.withdrawalValidation =  [
     
 ]
 
+exports.transferValidation = [
+    check('amount', 'Amount is required').not().isEmpty(),
+    check('pin', 'PIN is required').not().isEmpty(),
+    check('accountNumber', 'Account Number is required').not().isEmpty(),
+];
+
