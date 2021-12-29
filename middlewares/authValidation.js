@@ -15,3 +15,12 @@ exports.loginValidation = [
     check('email', "please enter a valid email").isEmail(),
     check("password","please enter an alphanumeric password with 6 or more characters").isAlphanumeric().isLength({min:6})
 ]
+
+exports.verifyEmailValidation = [
+    check('email', 'Please include a valid email').isEmail(),
+    check('otp', 'Please include a valid otp').not().isEmpty()
+];
+
+exports.validateEmail = [
+    check('email', 'Please include a valid email').isEmail()
+];

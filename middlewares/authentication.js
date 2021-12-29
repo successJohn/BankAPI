@@ -1,7 +1,6 @@
-//const { config } = require("dotenv");
 const jwt = require("jsonwebtoken");
 
-//require ("dotenv").config();
+
 const config = process.env;
 
 exports.authentication = (req, res, next) =>{
