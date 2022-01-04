@@ -6,7 +6,7 @@ A bank app API that enables users to create a bank account (either savings or cu
 
 - [Postman API Documentation](https://documenter.getpostman.com/view/17748340/UVXbuKYk)
 
-![Screenshot](bankAPI.png?raw=true "Bank API")
+![Screenshot](Bank-API.png?raw=true "Bank API")
 
 ## Technologies 
 
