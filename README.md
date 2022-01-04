@@ -3,6 +3,11 @@
 ## Description
 A bank app API that enables users to create a bank account (either savings or current account), perform transactions( deposit , withdrawal and transfer money to another account)
 
+
+- [Postman API Documentation](https://documenter.getpostman.com/view/17748340/UVXbuKYk)
+
+![Screenshot](bankAPI.png?raw=true "Bank API")
+
 ## Technologies 
 
 The following technologies were used in this project:

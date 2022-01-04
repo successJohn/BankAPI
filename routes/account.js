@@ -16,8 +16,8 @@ const {
 route.post('/createaccount', [authentication,createAccountValidation], createAccount);
 route.post('/:accountId/deposit', [authentication,depositValidation], deposit);
 route.post('/:accountId/withdraw', [authentication,withdrawalValidation], withdrawal);
-router.post('/:accountId/transfer', [authentication, transferValidation], transfer);
-router.get('/:accountId/balance', authentication, getBalance);
-router.get('/:accountId/history', authentication, getHistory);
+route.post('/:accountId/transfer', [authentication, transferValidation], transfer);
+route.get('/:accountId/balance', authentication, getBalance);
+route.get('/:accountId/history', authentication, getHistory);
 module.exports = route;
 
